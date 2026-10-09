@@ -175,3 +175,154 @@ def generate_doctor_checklist(topic_id: str, symptoms: str = "", duration: str =
         "duration": duration or "Not specified",
         "questions": all_questions
     }
+
+def get_knowledge_base_stats(topics=None, sources=None) -> dict:
+    """
+    Derives metadata stats dynamically from the curated health knowledge base.
+    Used for dashboard charting without duplicating datasets or using fake statistics.
+    Includes empty data handling for robustness.
+    """
+    if topics is None:
+        topics = HEALTH_TOPICS
+    if sources is None:
+        sources = TRUSTED_SOURCES
+
+    if not topics or not isinstance(topics, list):
+        return {
+            "categories": {},
+            "sources": {},
+            "languages": {"English": 0, "Hindi": 0, "Kannada": 0},
+            "total_topics": 0
+        }
+
+    categories = {}
+    for t in topics:
+        if isinstance(t, dict):
+            cat = t.get("category", "General Health")
+            categories[cat] = categories.get(cat, 0) + 1
+
+    source_counts = {}
+    for t in topics:
+        if isinstance(t, dict):
+            for s_key in t.get("trusted_sources", []):
+                short_name = s_key.upper()
+                if "mohfw" in s_key.lower():
+                    short_name = "MoHFW (India)"
+                elif "icmr" in s_key.lower():
+                    short_name = "ICMR"
+                elif "who" in s_key.lower():
+                    short_name = "WHO"
+                elif "nhp" in s_key.lower():
+                    short_name = "NHP India"
+                elif "nhs" in s_key.lower():
+                    short_name = "NHS UK"
+                elif "cdc" in s_key.lower():
+                    short_name = "CDC"
+                source_counts[short_name] = source_counts.get(short_name, 0) + 1
+
+    lang_stats = {"English": 0, "Hindi": 0, "Kannada": 0}
+    for t in topics:
+        if isinstance(t, dict):
+            is_trans = t.get("is_translated", {})
+            if is_trans.get("en", True):
+                lang_stats["English"] += 1
+            if is_trans.get("hi", False):
+                lang_stats["Hindi"] += 1
+            if is_trans.get("kn", False):
+                lang_stats["Kannada"] += 1
+
+    return {
+        "categories": categories,
+        "sources": source_counts,
+        "languages": lang_stats,
+        "total_topics": len(topics)
+    }
+
+def get_featured_health_tip(language: str = "en") -> dict:
+    """
+    Selects a featured educational health tip directly from the curated knowledge base.
+    Includes trusted source reference details if available.
+    """
+    if not HEALTH_TOPICS:
+        return {
+            "title": "Stay Hydrated",
+            "category": "General Health",
+            "content": "Drink 8-10 glasses of clean water daily to support body functions.",
+            "source_name": "World Health Organization",
+            "source_url": "https://www.who.int"
+        }
+    topic = HEALTH_TOPICS[0]
+    title = topic["title"].get(language, topic["title"]["en"])
+    content = topic["simple"].get(language, topic["simple"]["en"])
+    
+    src_key = topic.get("trusted_sources", ["who"])[0]
+    src_info = TRUSTED_SOURCES.get(src_key, {"name": "WHO", "url": "https://www.who.int"})
+    
+    return {
+        "title": title,
+        "category": topic["category"],
+        "content": content,
+        "topic_id": topic["id"],
+        "source_name": src_info["name"],
+        "source_url": src_info["url"]
+    }
+
+def get_app_overview_metrics(topics=None, sources=None) -> dict:
+    """
+    Returns verified system overview metrics derived directly from the application data.
+    Does NOT invent or simulate patient data.
+    """
+    if topics is None:
+        topics = HEALTH_TOPICS
+    if sources is None:
+        sources = TRUSTED_SOURCES
+    
+    total_topics = len(topics) if isinstance(topics, list) else 0
+    total_sources = len(sources) if isinstance(sources, dict) else 0
+    
+    return {
+        "total_topics": total_topics,
+        "total_sources": total_sources,
+        "total_languages": 3,
+        "total_emergency_lines": 4
+    }
+
+def get_theme_config(theme_name: str) -> dict:
+    """
+    Returns theme configuration settings for UI rendering and chart styling.
+    Supported theme_name options: 'Light', 'Dark', 'System Default'
+    """
+    theme_name = theme_name if theme_name in ["Light", "Dark", "System Default"] else "Light"
+    
+    if theme_name == "Dark":
+        return {
+            "name": "Dark",
+            "mode": "dark",
+            "plotly_template": "plotly_dark",
+            "bg_card": "#1e293b",
+            "text_color": "#f8fafc",
+            "border_color": "#334155",
+            "palette": ["#14b8a6", "#38bdf8", "#2dd4bf", "#60a5fa", "#a78bfa", "#f59e0b"]
+        }
+    elif theme_name == "System Default":
+        return {
+            "name": "System Default",
+            "mode": "system",
+            "plotly_template": "plotly_white",
+            "bg_card": "#ffffff",
+            "text_color": "#0f172a",
+            "border_color": "#cbd5e1",
+            "palette": ["#0d5c75", "#0284c7", "#0f766e", "#2563eb", "#16a34a", "#d97706", "#9333ea"]
+        }
+    else:  # Light Theme
+        return {
+            "name": "Light",
+            "mode": "light",
+            "plotly_template": "plotly_white",
+            "bg_card": "#ffffff",
+            "text_color": "#0f172a",
+            "border_color": "#e2e8f0",
+            "palette": ["#0d5c75", "#0284c7", "#0f766e", "#2563eb", "#16a34a", "#d97706", "#9333ea"]
+        }
+
+

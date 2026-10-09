@@ -141,3 +141,62 @@ def test_trusted_source_links():
         assert any(domain in url for domain in [
             "mohfw.gov.in", "icmr.gov.in", "who.int", "nhp.gov.in", "nhs.uk", "cdc.gov"
         ]), f"Source {key} domain is unverified: {url}"
+
+# ==========================================
+# 7. DASHBOARD STATS & HELPER FUNCTION TESTS
+# ==========================================
+from assistant import (
+    get_knowledge_base_stats,
+    get_featured_health_tip,
+    get_app_overview_metrics,
+    get_theme_config
+)
+
+def test_knowledge_base_stats_derivation():
+    """Verify get_knowledge_base_stats derives accurate counts from real HEALTH_TOPICS metadata."""
+    stats = get_knowledge_base_stats()
+    assert stats["total_topics"] == len(HEALTH_TOPICS)
+    assert "categories" in stats
+    assert len(stats["categories"]) > 0
+    assert "sources" in stats
+    assert len(stats["sources"]) > 0
+    assert stats["languages"]["English"] == len(HEALTH_TOPICS)
+
+def test_knowledge_base_stats_empty_fallback():
+    """Verify graceful handling of empty or malformed inputs for dashboard stats."""
+    empty_stats = get_knowledge_base_stats(topics=[], sources={})
+    assert empty_stats["total_topics"] == 0
+    assert empty_stats["categories"] == {}
+    assert empty_stats["sources"] == {}
+
+def test_featured_health_tip():
+    """Verify get_featured_health_tip returns a valid educational tip from curated data."""
+    tip = get_featured_health_tip(language="en")
+    assert tip is not None
+    assert "title" in tip
+    assert "content" in tip
+    assert "source_name" in tip
+    assert len(tip["content"]) > 10
+
+def test_app_overview_metrics():
+    """Verify system overview metrics are accurately derived from knowledge base."""
+    metrics = get_app_overview_metrics()
+    assert metrics["total_topics"] == len(HEALTH_TOPICS)
+    assert metrics["total_sources"] == len(TRUSTED_SOURCES)
+    assert metrics["total_languages"] == 3
+    assert metrics["total_emergency_lines"] == 4
+
+def test_theme_config_helper():
+    """Verify get_theme_config returns valid settings for Light, Dark, and System Default."""
+    light_cfg = get_theme_config("Light")
+    assert light_cfg["plotly_template"] == "plotly_white"
+    assert len(light_cfg["palette"]) > 0
+
+    dark_cfg = get_theme_config("Dark")
+    assert dark_cfg["plotly_template"] == "plotly_dark"
+    assert dark_cfg["mode"] == "dark"
+
+    sys_cfg = get_theme_config("System Default")
+    assert sys_cfg["name"] == "System Default"
+
+

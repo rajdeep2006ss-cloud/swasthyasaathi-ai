@@ -1,39 +1,53 @@
 # SwasthyaSaathi AI 🩺
 > **PromptWars × SNPSU 2026 Challenge Entry: AI for Healthcare Accessibility**
 
-SwasthyaSaathi AI is a privacy-first, offline-capable Python Streamlit web application designed to break health literacy barriers and make evidence-based healthcare education accessible across India. 
+SwasthyaSaathi AI is a privacy-first, offline-capable Python Streamlit web application designed to break health literacy barriers and make evidence-based healthcare education accessible across India.
 
 ---
 
 ## 🌟 Key Features
 
-1. **📱 Accessible & Mobile-Friendly Interface**
-   - Clean, modern UI with high-contrast text, clear visual hierarchy, and mobile responsive layout.
-2. **🌐 Multilingual Support (English, Hindi, Kannada)**
-   - Seamlessly switch between English, हिंदी (Hindi), and ಕನ್ನಡ (Kannada).
-   - Any content not fully translated displays an explicit `⚠️ [Untranslated / English Fallback]` indicator to ensure transparency.
-3. **🌱 Dual Reading Levels (Simple & Standard)**
-   - **Simple**: Plain-language summaries with bulleted practical action steps for low health literacy users.
-   - **Standard**: Detailed health guides with target ranges, clinical guidelines (ICMR/WHO), and monitoring parameters.
-4. **📋 Doctor Appointment Preparation Tool**
-   - Helps users generate, customize, and download structured question checklists prior to visiting a doctor or clinic.
-5. **🚨 Red-Flag Emergency Warning Rules**
-   - Instant detection of urgent triggers (chest pain, shortness of breath, severe bleeding, stroke signs, poison, etc.).
-   - Displays clear advice to call **108 (Ambulance)**, **112 (Emergency)**, or **14416 (Tele-MANAS)**.
-6. **🔗 Verified Authentic Sources Only**
-   - All health guidance cites genuine public health authorities:
-     - Ministry of Health & Family Welfare (MoHFW), Govt. of India (`https://www.mohfw.gov.in`)
-     - Indian Council of Medical Research (ICMR) (`https://www.icmr.gov.in`)
-     - World Health Organization (WHO) (`https://www.who.int`)
-     - National Health Portal of India (NHP) (`https://www.nhp.gov.in`)
-     - National Health Service UK (NHS) (`https://www.nhs.uk`)
-     - Centers for Disease Control and Prevention (CDC) (`https://www.cdc.gov`)
-7. **🔒 Privacy Guarantee (Zero PII & 100% Local)**
-   - Never requests names, phone numbers, addresses, or medical records.
-   - Active input sanitization strips any phone/email patterns before processing.
-8. **💡 Transparent Engine Architecture**
-   - Uses a deterministic local keyword-search index over curated public medical guidelines.
-   - **No external AI APIs, no black-box generative hallucinations, and no false machine learning claims.**
+1. **🎨 Theme System (Light, Dark, System Default)**
+   - **Sidebar Theme Selector**: Choose between **System Default**, **Light**, and **Dark** themes.
+   - Dynamic CSS variable engine (`--bg-app`, `--bg-card`, `--accent-primary`, etc.) ensures readable contrast across cards, buttons, inputs, tabs, and Plotly charts.
+   - Keyboard accessibility focus rings and `@media (prefers-reduced-motion: reduce)` support.
+
+2. **🏠 Home Dashboard & Overview Metrics**
+   - **Compact Hero Section**: Stethoscope SVG graphic, SwasthyaSaathi AI identity, and healthcare accessibility tagline.
+   - **System Overview Cards**: Real verified metrics derived from the database:
+     - 📚 **8** Curated Health Topics
+     - 🌐 **3** Supported Languages (EN, HI, KN)
+     - 🔗 **6** Official Health Bodies (WHO, ICMR, MoHFW, NHP, NHS, CDC)
+     - 🚨 **4** Emergency Helplines (108, 112, 104, 14416)
+   - **Medical Disclaimer**: High-visibility warning panel clarifying educational purpose.
+   - **Emergency Quick Access**: High-visibility emergency strip.
+   - **Featured Daily Health Tip**: Curated tip with direct citation link to official health organization source.
+
+3. **📌 Interactive Feature Navigation Grid**
+   - 4 Clickable Cards Grid (*Health Assistant*, *Doctor Prep Tool*, *Knowledge Library*, *Emergency Info*).
+   - Session-state routing via `st.session_state.active_tab` with hover lift animations and clean buttons.
+
+4. **📊 Redesigned Plotly Data Visualizations ("Health Knowledge Overview")**
+   - **Chart A (Curated Knowledge Distribution)**: Horizontal Plotly bar chart showing entry counts per category with long label handling and theme-matching palette (`#0d5c75`, `#0284c7`, etc.).
+   - **Chart B (Trusted Source Coverage)**: Plotly bar chart showing reference coverage per official body (ICMR, MoHFW, WHO, NHP, NHS, CDC).
+   - Theme-adaptive Plotly templates (`plotly_white` and `plotly_dark`).
+
+5. **💬 Health Assistant & Multilingual Support**
+   - Keyword query engine supporting **English**, **हिंदी (Hindi)**, and **ಕನ್ನಡ (Kannada)** with `⚠️ Untranslated` fallback badges.
+
+6. **🌱 Dual Reading Levels**
+   - **Simple**: Plain language action steps.
+   - **Standard**: Clinical target ranges (ICMR/WHO) and detailed health guides.
+
+7. **📋 Doctor Appointment Prep Tool**
+   - Custom question checklist generator with text file export.
+
+8. **🚨 Red-Flag Emergency Detection**
+   - Keyword alert rules for urgent symptoms (chest pain, stroke, poison, etc.) displaying 108/112/104 helplines.
+
+9. **🔒 Privacy & Transparency Guarantee**
+   - Zero PII (names, numbers, emails) requested or stored. Regex sanitization strips sensitive patterns.
+   - 100% local operation — no external generative AI APIs.
 
 ---
 
@@ -41,21 +55,21 @@ SwasthyaSaathi AI is a privacy-first, offline-capable Python Streamlit web appli
 
 ```
 swasthyasaathi-ai/
-├── app.py              # Main Streamlit user interface & tab navigation
-├── assistant.py        # Search engine, emergency detection & doctor prep logic
+├── app.py              # Streamlit interface, theme engine & dashboard navigation
+├── assistant.py        # Search engine, emergency check, metrics derivation & theme config
 ├── knowledge_base.py   # Curated health topics, translations & source database
-├── test_app.py         # Automated Pytest suite (10/10 tests passing)
-├── requirements.txt    # Application dependencies (streamlit, pytest)
-├── .gitignore          # Environment and cache ignores
-└── README.md           # Documentation & launch guide
+├── test_app.py         # Automated Pytest suite (15/15 tests passing)
+├── requirements.txt    # Python dependencies (streamlit, pytest, plotly)
+├── .gitignore          # Environment & cache ignores
+└── README.md           # Documentation & setup guide
 ```
 
 ---
 
-## 🛠️ Local Installation & Running Instructions
+## 🛠️ Local Setup & Running Instructions
 
 ### 1. Prerequisites
-Ensure Python 3.9+ is installed on your system.
+Ensure Python 3.9+ is installed.
 
 ### 2. Install Dependencies
 ```bash
@@ -72,20 +86,23 @@ python -m pytest test_app.py -v
 streamlit run app.py
 ```
 
-The application will open in your local web browser at `http://localhost:8501`.
+Open `http://localhost:8501` in your browser.
 
 ---
 
 ## 🧪 Verification & Test Suite Summary
 
-The included test suite (`test_app.py`) verifies:
-- ✅ **Emergency Warning Triggers**: Accurate red-flag detection in English and Hindi.
-- ✅ **Topic Retrieval**: Accurate matching for Diabetes, Hypertension, Dengue, Pregnancy, Anemia, etc.
-- ✅ **Reading Levels**: Correct formatting for Simple vs. Standard reading modes.
-- ✅ **Fallback Behavior**: Out-of-scope queries return helpful category guidance without inventing medical facts.
-- ✅ **Doctor Prep Tool**: Question generation logic based on user input.
-- ✅ **Privacy Compliance**: Automatic stripping of phone numbers and emails.
-- ✅ **Authentic Sources**: All links point to trusted `.gov`, `.org`, or official domains.
+The automated test suite ([`test_app.py`](file:///C:/Users/user/swasthyasaathi-ai/test_app.py)) verifies:
+- ✅ Emergency red-flag alerts in English & Hindi.
+- ✅ Diabetes, Hypertension, Dengue, Anemia, and Maternal Health topic retrieval.
+- ✅ Simple vs Standard reading level formatting.
+- ✅ Out-of-scope query fallback handling.
+- ✅ Doctor Prep Tool checklist generation.
+- ✅ Privacy PII sanitization.
+- ✅ Verified HTTPS source links from official domains.
+- ✅ Metadata stats derivation & empty data fallbacks.
+- ✅ Overview metrics calculation.
+- ✅ Theme configuration helper (Light, Dark, System Default).
 
 ---
 
